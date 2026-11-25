@@ -532,16 +532,12 @@ Diagrams are always Structurizr DSL. Do not offer Mermaid, PlantUML, or another 
 
 ### Render and check
 
-Run Structurizr with Java 21+ and the Playwright-enabled WAR, or with Docker and the `-playwright` image tag. The plain image and plain WAR cannot export SVG or PNG.
+Run Structurizr from the Playwright-enabled WAR with Java 21+. The plain WAR cannot export SVG or PNG. Use the WAR from a local copy if one is already installed; otherwise download it.
 
 ```bash
 curl -O https://download.structurizr.com/structurizr-2026.09.19-playwright.war
 java -jar structurizr-2026.09.19-playwright.war export -workspace workspace.dsl -format svg -output diagrams
 java -jar structurizr-2026.09.19-playwright.war export -workspace workspace.dsl -format static -output site
-```
-
-```bash
-docker run --rm -v "$PWD:/usr/local/structurizr" structurizr/structurizr:2026.09.19-playwright export -workspace workspace.dsl -format svg -output diagrams
 ```
 
 Export PNG with `-format png` and inspect every rendered view. If labels overlap or arrows are hard to follow, split the view and render again. Fix a DSL parse error by reading the reported line; do not fall back to another format.
@@ -552,7 +548,7 @@ Export PNG with `-format png` and inspect every rendered view. If labels overlap
 * `diagrams/*.svg`: images for documents.
 * `site/`: the interactive static HTML site (zoom, tooltips, double-click navigation between views).
 
-If Java 21+ and Docker are both missing, deliver the `workspace.dsl`, say that it is unrendered, and name the missing prerequisite. Do not substitute another format.
+If Java 21+ is missing, deliver the `workspace.dsl`, say that it is unrendered, and name Java 21+ as the missing prerequisite. Do not substitute another format.
 
 ---
 
