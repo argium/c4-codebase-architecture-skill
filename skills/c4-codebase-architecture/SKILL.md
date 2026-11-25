@@ -68,7 +68,7 @@ The skill should aim to produce some or all of the following, depending on what 
 
 5. **Optional diagram source**
 
-   * Mermaid, PlantUML, Structurizr DSL, or plain text diagram descriptions
+   * Structurizr DSL (`workspace.dsl`), rendered to SVG and a static HTML site
 
 Unless explicitly requested, the skill does **not** need to generate a full Code-level diagram. It may mention classes, modules, or packages only when that materially improves understanding.
 
@@ -291,7 +291,6 @@ Ask questions only when they materially improve correctness. Prefer batching 3 t
 
 ### About output format
 
-* Do you want Mermaid, PlantUML, Structurizr DSL, or just textual documentation?
 * Would you prefer concise docs or something more explanatory and onboarding-friendly?
 
 ---
@@ -520,16 +519,40 @@ If the system is large, propose documenting it incrementally rather than forcing
 
 ---
 
-## Optional output formats
+## Diagram output
 
-When asked, the skill may emit diagrams as:
+Diagrams are always Structurizr DSL. Do not offer Mermaid, PlantUML, or another format, and do not ask the user to choose one. If the user explicitly asks for another format, export it from the same workspace with `structurizr export -format mermaid` or `-format plantuml`.
 
-* Mermaid
-* PlantUML with C4 extensions
-* Structurizr DSL
-* plain Markdown with structured sections
+### Write the workspace
 
-If the user has no preference, default to Markdown narrative plus Mermaid.
+* Write one `workspace.dsl` containing the model and every view (system context, container, component, and dynamic views where call order matters).
+* Give every view `autoLayout lr`. Do not place elements manually.
+* Label every relationship with what it does ("Calls over HTTPS", "Publishes events to", "Reads from") and, where known, its technology.
+* Keep each view small enough to read. Split a crowded view by container or by use case instead of tuning positions.
+
+### Render and check
+
+Run Structurizr with Java 21+ and the Playwright-enabled WAR, or with Docker and the `-playwright` image tag. The plain image and plain WAR cannot export SVG or PNG.
+
+```bash
+curl -O https://download.structurizr.com/structurizr-2026.09.19-playwright.war
+java -jar structurizr-2026.09.19-playwright.war export -workspace workspace.dsl -format svg -output diagrams
+java -jar structurizr-2026.09.19-playwright.war export -workspace workspace.dsl -format static -output site
+```
+
+```bash
+docker run --rm -v "$PWD:/usr/local/structurizr" structurizr/structurizr:2026.09.19-playwright export -workspace workspace.dsl -format svg -output diagrams
+```
+
+Export PNG with `-format png` and inspect every rendered view. If labels overlap or arrows are hard to follow, split the view and render again. Fix a DSL parse error by reading the reported line; do not fall back to another format.
+
+### Deliverables
+
+* `workspace.dsl`: the editable source.
+* `diagrams/*.svg`: images for documents.
+* `site/`: the interactive static HTML site (zoom, tooltips, double-click navigation between views).
+
+If Java 21+ and Docker are both missing, deliver the `workspace.dsl`, say that it is unrendered, and name the missing prerequisite. Do not substitute another format.
 
 ---
 

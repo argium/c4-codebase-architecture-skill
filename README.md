@@ -10,7 +10,7 @@ This skill helps an AI coding agent inspect a repository and produce [C4 model](
 - produces System Context, Container, and Component views
 - separates observed facts from inferences
 - asks targeted follow-up questions when the code alone is insufficient
-- supports output as Markdown narrative with Mermaid diagrams, PlantUML, or Structurizr DSL
+- produces Structurizr DSL with automatic layout, rendered to SVG and an interactive static HTML site
 
 ## Installation
 
