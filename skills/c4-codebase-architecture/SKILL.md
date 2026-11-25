@@ -532,12 +532,13 @@ Diagrams are always Structurizr DSL. Do not offer Mermaid, PlantUML, or another 
 
 ### Render and check
 
-Run Structurizr from the Playwright-enabled WAR with Java 21+. The plain WAR cannot export SVG or PNG. Use the WAR from a local copy if one is already installed; otherwise download it.
+Render with the container image that the `STRUCTURIZR_IMAGE` environment variable names, using `podman` (or `docker`). It is a `structurizr/structurizr` tag ending in `-playwright`, which bundles Java and the browser that SVG and PNG export need. The plain image cannot export either. Do not install Java, download a WAR, or install a browser. If the variable is unset or the container runtime is missing, stop and tell the user which one.
+
+Mount the directory that holds `workspace.dsl` at `/usr/local/structurizr`:
 
 ```bash
-curl -O https://download.structurizr.com/structurizr-2026.09.19-playwright.war
-java -jar structurizr-2026.09.19-playwright.war export -workspace workspace.dsl -format svg -output diagrams
-java -jar structurizr-2026.09.19-playwright.war export -workspace workspace.dsl -format static -output site
+podman run --rm -v "$PWD:/usr/local/structurizr" "$STRUCTURIZR_IMAGE" export -workspace workspace.dsl -format svg -output diagrams
+podman run --rm -v "$PWD:/usr/local/structurizr" "$STRUCTURIZR_IMAGE" export -workspace workspace.dsl -format static -output site
 ```
 
 Export PNG with `-format png` and inspect every rendered view. If labels overlap or arrows are hard to follow, split the view and render again. Fix a DSL parse error by reading the reported line; do not fall back to another format.
@@ -548,7 +549,7 @@ Export PNG with `-format png` and inspect every rendered view. If labels overlap
 * `diagrams/*.svg`: images for documents.
 * `site/`: the interactive static HTML site (zoom, tooltips, double-click navigation between views).
 
-If Java 21+ is missing, deliver the `workspace.dsl`, say that it is unrendered, and name Java 21+ as the missing prerequisite. Do not substitute another format.
+If the image or container runtime is unavailable, deliver the `workspace.dsl`, say that it is unrendered, and name what is missing. Do not substitute another format.
 
 ---
 
